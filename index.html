@@ -258,8 +258,9 @@ tr:hover td{background:rgba(255,255,255,0.02);}
           <div style="font-weight:700;font-size:0.85rem;" id="viewer-title">—</div>
         </div>
         <div class="viewer-frame-wrap"><iframe id="viewer-iframe" src=""></iframe></div>
-        <div style="font-size:0.65rem;color:var(--text3);margin-top:8px;">
-          <i class="fa-solid fa-circle-info"></i> หากหน้าจอว่างเปล่า อาจเป็นเพราะเว็บไซต์ปลายทางตั้งค่าไม่อนุญาตให้แสดงผลแบบฝัง (iframe) — กรณีนี้ให้ตรวจสอบ/แก้ไขลิงก์ให้เป็น "ลิงก์แบบฝัง (Embed URL)" ที่ Admin Panel
+        <div style="font-size:0.65rem;color:var(--text3);margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+          <span><i class="fa-solid fa-circle-info"></i> หากขึ้นไอคอนไฟล์/หน้าว่างเปล่า แปลว่าเว็บไซต์ปลายทางไม่อนุญาตให้แสดงผลแบบฝัง (iframe) — <b>Looker Studio</b>: เปิดรายงาน → File → Embed report → เปิด "Enable embedding" · <b>AppSheet</b>: เปิด App Editor → Security → Options → เปิด "Allow app embedding" (ใช้ได้เฉพาะแอปที่ตั้งเป็น Public เท่านั้น แอปที่ต้อง Login ด้วย Google จะฝังนอก Google Sites ไม่ได้) แล้วบันทึกลิงก์ใหม่อีกครั้ง</span>
+          <a href="#" id="viewer-fallback-link" target="_blank" rel="noopener" style="color:var(--cyan);white-space:nowrap;">เปิดลิงก์ต้นฉบับในแท็บใหม่ (สำรอง) <i class="fa-solid fa-up-right-from-square"></i></a>
         </div>
       </div>
 
@@ -317,6 +318,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
         </select>
       </div>
       <div class="fgroup"><label class="flabel">URL *</label><input class="fi" id="lk-url" placeholder="https://..."></div>
+      <div class="chk-row"><input type="checkbox" id="lk-external"><label for="lk-external">เปิดในแท็บใหม่ทันที (ไม่ฝังในหน้านี้) — ใช้กับแอปที่ต้อง Login/ไม่รองรับ iframe เช่น AppSheet ที่ตั้ง Restricted</label></div>
       <div class="chk-row"><input type="checkbox" id="lk-active" checked><label for="lk-active">เปิดใช้งาน (แสดงในเมนู)</label></div>
     </div>
     <div class="modal-foot">
@@ -535,11 +537,16 @@ function nav(id){
 function openLinkViewer(linkId){
   var link = getLinks().find(function(l){ return l.id===linkId; });
   if (!link){ showToast('ไม่พบลิงก์นี้','error'); return; }
+  if (link.external){
+    window.open(link.url, '_blank', 'noopener');
+    return;
+  }
   _activePage = linkId;
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   document.getElementById('page-viewer').classList.add('active');
   document.getElementById('viewer-title').textContent = link.name;
   document.getElementById('viewer-iframe').src = link.url;
+  document.getElementById('viewer-fallback-link').href = link.url;
   document.getElementById('tb-title').textContent = link.name;
   document.getElementById('tb-sub').textContent = typeMeta(link.type).label + ' · เปิดภายใน PSD_eNGINNo';
   renderSidebar();
@@ -569,7 +576,7 @@ function renderDashboard(){
       (_me.isAdmin ? '<div class="li-edit" onclick="event.stopPropagation();openLinkModal(\''+l.id+'\')"><i class="fa-solid fa-pen"></i></div>' : '') +
       '<div class="li-icon" style="background:'+tm.color+'22;color:'+tm.color+';border:1px solid '+tm.color+'44;"><i class="'+tm.icon+'"></i></div>' +
       '<div class="li-name">'+escHtml(l.name)+'</div>' +
-      '<div class="li-type">'+tm.label+'</div></div>';
+      '<div class="li-type">'+tm.label+(l.external?' · <i class="fa-solid fa-up-right-from-square"></i> แท็บใหม่':'')+'</div></div>';
   }).join('');
 }
 
@@ -586,14 +593,33 @@ function openLinkModal(linkId){
     document.getElementById('lk-type').value = l.type;
     document.getElementById('lk-url').value = l.url;
     document.getElementById('lk-active').checked = !!l.active;
+    document.getElementById('lk-external').checked = !!l.external;
   } else {
     document.getElementById('link-modal-title').textContent = 'เพิ่มลิงก์ใหม่';
     document.getElementById('lk-name').value='';
     document.getElementById('lk-type').value='webapp';
     document.getElementById('lk-url').value='';
     document.getElementById('lk-active').checked = true;
+    document.getElementById('lk-external').checked = false;
   }
   openModal('modal-link');
+}
+function normalizeEmbedUrl(url, type){
+  // Looker Studio: convert normal share link to embeddable link automatically
+  if (type === 'looker'){
+    if (/lookerstudio\.google\.com\/(u\/\d+\/)?reporting\//i.test(url) && !/\/embed\//i.test(url)){
+      url = url.replace(/lookerstudio\.google\.com\/(u\/\d+\/)?reporting\//i, 'lookerstudio.google.com/embed/reporting/');
+    }
+    if (/datastudio\.google\.com\/(u\/\d+\/)?reporting\//i.test(url) && !/\/embed\//i.test(url)){
+      url = url.replace(/datastudio\.google\.com\/(u\/\d+\/)?reporting\//i, 'datastudio.google.com/embed/reporting/');
+    }
+  }
+  // AppSheet: extract appId from an editor/template URL and rebuild as the embeddable /start/ link
+  if (type === 'appsheet'){
+    var m = url.match(/[?&]appId=([a-f0-9-]{20,})/i);
+    if (m){ url = 'https://www.appsheet.com/start/' + m[1]; }
+  }
+  return url;
 }
 function saveLink(){
   var id = document.getElementById('lk-id').value;
@@ -601,14 +627,17 @@ function saveLink(){
   var url = document.getElementById('lk-url').value.trim();
   var type = document.getElementById('lk-type').value;
   var active = document.getElementById('lk-active').checked;
+  var external = document.getElementById('lk-external').checked;
   if (!name || !url){ showToast('กรุณากรอกชื่อและ URL ให้ครบ','warn'); return; }
   if (!/^https?:\/\//i.test(url)){ showToast('URL ต้องขึ้นต้นด้วย http:// หรือ https://','warn'); return; }
+  var fixedUrl = normalizeEmbedUrl(url, type);
+  if (fixedUrl !== url){ showToast('🔧 แปลงเป็น Embed URL ให้อัตโนมัติแล้ว','success'); url = fixedUrl; }
   var list = getLinks();
   if (id){
     var idx = list.findIndex(function(x){return x.id===id;});
-    if (idx>=0){ list[idx].name=name; list[idx].url=url; list[idx].type=type; list[idx].active=active; }
+    if (idx>=0){ list[idx].name=name; list[idx].url=url; list[idx].type=type; list[idx].active=active; list[idx].external=external; }
   } else {
-    list.push({ id:uid('LK'), name:name, url:url, type:type, active:active, createdAt:new Date().toLocaleString('th-TH') });
+    list.push({ id:uid('LK'), name:name, url:url, type:type, active:active, external:external, createdAt:new Date().toLocaleString('th-TH') });
   }
   saveLinks(list);
   closeModal('modal-link');
@@ -685,7 +714,7 @@ function renderAdmin(){
     var tm = typeMeta(l.type);
     return '<tr><td><i class="'+tm.icon+'" style="color:'+tm.color+';"></i></td><td>'+escHtml(l.name)+'</td><td>'+tm.label+'</td>' +
       '<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text3);">'+escHtml(l.url)+'</td>' +
-      '<td>'+(l.active?'<span class="badge b-g">เปิดใช้งาน</span>':'<span class="badge b-r">ปิดใช้งาน</span>')+'</td>' +
+      '<td>'+(l.active?'<span class="badge b-g">เปิดใช้งาน</span>':'<span class="badge b-r">ปิดใช้งาน</span>')+(l.external?' <span class="badge b-b">แท็บใหม่</span>':'')+'</td>' +
       '<td style="text-align:right;white-space:nowrap;">' +
       '<button class="btn btn-y" style="padding:4px 10px;" onclick="toggleLinkActive(\''+l.id+'\')"><i class="fa-solid fa-power-off"></i></button> ' +
       '<button class="btn btn-c" style="padding:4px 10px;" onclick="openLinkModal(\''+l.id+'\')"><i class="fa-solid fa-pen"></i></button>' +
