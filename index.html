@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>PSD_eNGINNo OPERATION SMART MANAGEMENT V1.0</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#060b14">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Orbitron:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#060b14;--bg2:#0d1525;--card:rgba(255,255,255,0.03);
+  --cyan:#00f5ff;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--blue:#3b82f6;--purple:#a855f7;
+  --text:rgba(255,255,255,0.9);--text2:rgba(255,255,255,0.55);--text3:rgba(255,255,255,0.32);
+  --border:rgba(255,255,255,0.08);--sw:264px;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow:hidden;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:3px;}
+button,input,select,textarea{font-family:'Sarabun',sans-serif;}
+
+/* ═══ LOGIN ═══ */
+#auth-page{position:fixed;inset:0;z-index:9999;background:#060b14;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto;}
+#auth-page::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,245,255,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.035) 1px,transparent 1px);background-size:38px 38px;pointer-events:none;}
+.auth-wrap{width:100%;max-width:430px;position:relative;z-index:1;}
+.brand-box{text-align:center;margin-bottom:24px;}
+.brand-logo{width:62px;height:62px;border-radius:16px;background:linear-gradient(135deg,#1e3a8a,#00f5ff);display:flex;align-items:center;justify-content:center;font-family:Orbitron,sans-serif;font-size:1.35rem;font-weight:900;color:#fff;margin:0 auto 12px;box-shadow:0 0 30px rgba(0,245,255,0.25);}
+.brand-title{font-family:Orbitron,sans-serif;font-size:1.02rem;font-weight:700;background:linear-gradient(135deg,#60a5fa,#00f5ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:.5px;}
+.brand-sub{font-size:0.72rem;color:var(--text2);margin-top:4px;}
+.auth-tabs{display:flex;gap:0;margin-bottom:18px;background:rgba(255,255,255,0.04);border-radius:10px;padding:4px;border:1px solid var(--border);}
+.auth-tab-btn{flex:1;padding:9px;border:none;border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer;background:transparent;color:var(--text3);}
+.auth-tab-btn.on{background:rgba(0,245,255,0.12);color:var(--cyan);}
+.auth-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:14px;padding:22px;}
+.fi{width:100%;padding:10px 12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:0.82rem;outline:none;}
+.fi:focus{border-color:rgba(0,245,255,0.4);}
+.flabel{display:block;font-size:0.68rem;color:var(--text2);margin-bottom:5px;}
+.fgroup{margin-bottom:12px;}
+.msg-box{padding:9px 12px;border-radius:8px;font-size:0.74rem;margin-bottom:12px;display:none;}
+.msg-err{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:var(--red);}
+.msg-ok{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:var(--green);}
+.btn-main{width:100%;padding:11px;background:linear-gradient(135deg,rgba(0,100,200,0.45),rgba(0,245,255,0.2));border:1px solid rgba(0,245,255,0.35);border-radius:9px;color:var(--cyan);font-size:0.84rem;font-weight:700;cursor:pointer;}
+.demo-box{margin-top:14px;padding:10px 12px;border-radius:9px;background:rgba(168,85,247,0.06);border:1px dashed rgba(168,85,247,0.25);font-size:0.66rem;color:var(--text2);line-height:1.6;}
+.demo-box b{color:var(--purple);}
+
+/* ═══ SHELL ═══ */
+.shell{display:none;height:100vh;}
+.sidebar{width:var(--sw);flex-shrink:0;background:rgba(0,0,0,0.55);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:width .22s;}
+.sidebar.collapsed{width:56px;}
+.sidebar.collapsed .hide-c{display:none!important;}
+.sb-brand{padding:14px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.sb-logo{width:36px;height:36px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#1e3a8a,#00f5ff);display:flex;align-items:center;justify-content:center;font-size:0.95rem;font-weight:900;font-family:Orbitron,sans-serif;color:#fff;}
+.sb-name{font-family:Orbitron,sans-serif;font-size:0.66rem;font-weight:700;background:linear-gradient(135deg,#60a5fa,#00f5ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;line-height:1.3;}
+.sb-ver{font-size:0.56rem;color:var(--text3);white-space:nowrap;}
+.sb-user{padding:10px 12px;border-bottom:1px solid var(--border);background:rgba(0,245,255,0.03);flex-shrink:0;}
+.sb-user .u-name{font-size:0.76rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-user .u-role{font-size:0.62rem;color:var(--cyan);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 0;}
+.sb-sec{font-size:0.56rem;text-transform:uppercase;letter-spacing:1.8px;color:var(--text3);padding:12px 14px 5px;white-space:nowrap;overflow:hidden;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 12px;cursor:pointer;border-radius:8px;margin:1px 6px;border-left:2px solid transparent;transition:.15s;}
+.sb-item:hover{background:rgba(255,255,255,0.05);}
+.sb-item.active{background:rgba(0,245,255,0.09);border-left-color:var(--cyan);color:var(--cyan);}
+.sb-item .si{font-size:0.86rem;width:18px;text-align:center;flex-shrink:0;}
+.sb-item .sl{font-size:0.76rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-item .sbadge{margin-left:auto;font-size:0.58rem;padding:1px 6px;border-radius:8px;background:rgba(239,68,68,0.2);color:var(--red);font-weight:700;flex-shrink:0;}
+.sb-foot{padding:10px;border-top:1px solid var(--border);flex-shrink:0;}
+.sb-logout{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(239,68,68,0.25);background:rgba(239,68,68,0.08);color:var(--red);font-size:0.72rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.topbar{padding:11px 18px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;}
+.tb-left{display:flex;align-items:center;gap:12px;min-width:0;}
+.tb-toggle{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tb-title{font-family:Orbitron,sans-serif;font-size:0.86rem;font-weight:700;color:var(--cyan);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tb-sub{font-size:0.64rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tb-right{display:flex;align-items:center;gap:9px;flex-shrink:0;}
+.clk{font-family:Orbitron,sans-serif;font-size:0.76rem;color:var(--cyan);text-align:right;}
+.clk-d{font-size:0.58rem;color:var(--text3);}
+.content{flex:1;overflow:auto;padding:18px 20px;}
+.page{display:none;}
+.page.active{display:block;}
+
+.sec-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:10px;flex-wrap:wrap;}
+.sec-hdr h2{font-family:Orbitron,sans-serif;font-size:0.92rem;font-weight:700;}
+.sec-hdr p{font-size:0.72rem;color:var(--text2);margin-top:3px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap;}
+.card-hdr h3{font-family:Orbitron,sans-serif;font-size:0.76rem;font-weight:700;}
+.btn{padding:7px 14px;border-radius:8px;border:1px solid;font-size:0.73rem;font-weight:600;cursor:pointer;transition:.15s;}
+.btn-c{background:rgba(0,245,255,0.1);border-color:rgba(0,245,255,0.3);color:var(--cyan);}
+.btn-c:hover{background:rgba(0,245,255,0.2);}
+.btn-g{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.3);color:var(--green);}
+.btn-g:hover{background:rgba(16,185,129,0.2);}
+.btn-r{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:var(--red);}
+.btn-r:hover{background:rgba(239,68,68,0.2);}
+.btn-y{background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.3);color:var(--yellow);}
+.btn-p{background:rgba(168,85,247,0.1);border-color:rgba(168,85,247,0.3);color:var(--purple);}
+.btn-ghost{background:rgba(255,255,255,0.04);border-color:var(--border);color:var(--text2);}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:0.64rem;font-weight:600;}
+.b-g{background:rgba(16,185,129,0.15);color:var(--green);}
+.b-y{background:rgba(245,158,11,0.15);color:var(--yellow);}
+.b-r{background:rgba(239,68,68,0.15);color:var(--red);}
+.b-b{background:rgba(59,130,246,0.15);color:var(--blue);}
+.b-p{background:rgba(168,85,247,0.15);color:var(--purple);}
+
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;}
+.stat-box .v{font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;}
+.stat-box .l{font-size:0.68rem;color:var(--text2);margin-top:2px;}
+
+.link-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;}
+.link-tile{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;transition:.15s;position:relative;}
+.link-tile:hover{border-color:rgba(0,245,255,0.35);transform:translateY(-2px);background:rgba(0,245,255,0.04);}
+.link-tile .li-icon{width:46px;height:46px;border-radius:12px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;}
+.link-tile .li-name{font-size:0.76rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.link-tile .li-type{font-size:0.6rem;color:var(--text3);margin-top:2px;}
+.link-tile .li-edit{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:6px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--text3);}
+
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;font-size:0.64rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:8px 10px;border-bottom:1px solid var(--border);}
+td{padding:9px 10px;font-size:0.76rem;border-bottom:1px solid rgba(255,255,255,0.05);vertical-align:middle;}
+tr:hover td{background:rgba(255,255,255,0.02);}
+
+.tabs2{display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--border);}
+.tab2-btn{padding:9px 16px;font-size:0.76rem;font-weight:600;color:var(--text3);background:transparent;border:none;cursor:pointer;border-bottom:2px solid transparent;}
+.tab2-btn.on{color:var(--cyan);border-bottom-color:var(--cyan);}
+
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:900;align-items:center;justify-content:center;padding:16px;}
+.modal-ov.show{display:flex;}
+.modal-box{background:#0d1525;border:1px solid var(--border);border-radius:16px;max-width:480px;width:100%;max-height:88vh;overflow-y:auto;}
+.modal-hdr{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#0d1525;z-index:1;}
+.modal-hdr h3{font-family:Orbitron,sans-serif;font-size:0.84rem;}
+.modal-x{cursor:pointer;color:var(--text3);font-size:1rem;background:none;border:none;}
+.modal-body{padding:18px 20px;}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
+.chk-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:6px;}
+.chk-row input{width:15px;height:15px;accent-color:var(--cyan);flex-shrink:0;}
+.chk-row label{font-size:0.75rem;cursor:pointer;flex:1;}
+
+.viewer-bar{display:flex;align-items:center;gap:10px;padding:10px 4px;margin-bottom:10px;}
+.viewer-frame-wrap{background:#fff;border-radius:12px;overflow:hidden;border:1px solid var(--border);height:calc(100vh - 180px);}
+.viewer-frame-wrap iframe{width:100%;height:100%;border:none;}
+.empty-hint{text-align:center;padding:40px 20px;color:var(--text3);font-size:0.8rem;}
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:9998;display:flex;flex-direction:column;gap:8px;}
+.toast{padding:11px 16px;border-radius:10px;background:#0d1525;border:1px solid var(--border);font-size:0.78rem;box-shadow:0 6px 20px rgba(0,0,0,.4);min-width:220px;animation:slideIn .25s;}
+@keyframes slideIn{from{transform:translateX(30px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+.toast.success{border-color:rgba(16,185,129,0.35);color:var(--green);}
+.toast.warn{border-color:rgba(245,158,11,0.35);color:var(--yellow);}
+.toast.error{border-color:rgba(239,68,68,0.35);color:var(--red);}
+
+@media(max-width:860px){
+  .sidebar{position:fixed;inset:0 auto 0 0;z-index:500;transform:translateX(-100%);transition:transform .25s;}
+  .sidebar.mobopen{transform:translateX(0);}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .viewer-frame-wrap{height:calc(100vh - 210px);}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ LOGIN / REGISTER ══════════ -->
+<div id="auth-page">
+  <div class="auth-wrap">
+    <div class="brand-box">
+      <div class="brand-logo">eN</div>
+      <div class="brand-title">PSD_eNGINNo</div>
+      <div class="brand-sub" style="font-family:Orbitron,sans-serif;letter-spacing:1px;">OPERATION SMART MANAGEMENT V1.0</div>
+      <div class="brand-sub" style="margin-top:6px;">ศูนย์รวม WebApp · Dashboard · ระบบปฏิบัติการ</div>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab-btn on" id="tabbtn-login" onclick="switchAuthTab('login')"><i class="fa-solid fa-key"></i> เข้าสู่ระบบ</button>
+      <button class="auth-tab-btn" id="tabbtn-reg" onclick="switchAuthTab('reg')"><i class="fa-solid fa-user-plus"></i> สมัครใช้งาน</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="auth-card" id="pane-login">
+      <div class="msg-box msg-err" id="login-err"></div>
+      <div class="fgroup"><label class="flabel">Username</label><input class="fi" id="li-user" onkeydown="if(event.key==='Enter')doLogin()" placeholder="username"></div>
+      <div class="fgroup"><label class="flabel">Password</label><input class="fi" type="password" id="li-pass" onkeydown="if(event.key==='Enter')doLogin()" placeholder="password"></div>
+      <button class="btn-main" onclick="doLogin()"><i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ</button>
+      <div class="demo-box"><b>บัญชีระบบ:</b><br>Admin → admin / passsword277<br>Duty Team → duty_ts / dutyts2026</div>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="auth-card" id="pane-reg" style="display:none;">
+      <div class="msg-box msg-err" id="reg-err"></div>
+      <div class="msg-box msg-ok" id="reg-ok"></div>
+      <div class="fgroup"><label class="flabel">ชื่อ-นามสกุล *</label><input class="fi" id="rg-name" placeholder="ชื่อ-นามสกุล"></div>
+      <div class="fgroup"><label class="flabel">Username *</label><input class="fi" id="rg-user" placeholder="username"></div>
+      <div class="fgroup"><label class="flabel">Password *</label><input class="fi" type="password" id="rg-pass" placeholder="password"></div>
+      <div class="fgroup"><label class="flabel">หน่วยงาน / ตำแหน่ง</label><input class="fi" id="rg-dept" placeholder="เช่น Operation Team A"></div>
+      <button class="btn-main" style="background:linear-gradient(135deg,rgba(16,120,90,0.45),rgba(16,185,129,0.2));border-color:rgba(16,185,129,0.35);color:var(--green);" onclick="doRegister()"><i class="fa-solid fa-paper-plane"></i> ส่งคำขอสมัครใช้งาน</button>
+      <div class="demo-box">คำขอของคุณจะถูกส่งให้ <b>Admin</b> เป็นผู้อนุมัติ แก้ไข หรือปฏิเสธ ก่อนจึงจะเข้าใช้งานได้</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ APP SHELL ══════════ -->
+<div class="shell" id="shell">
+  <div class="sidebar" id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo">eN</div>
+      <div class="hide-c">
+        <div class="sb-name">PSD_eNGINNo</div>
+        <div class="sb-ver">OPERATION SMART MGMT V1.0</div>
+      </div>
+    </div>
+    <div class="sb-user hide-c">
+      <div class="u-name" id="sb-uname">—</div>
+      <div class="u-role" id="sb-urole">—</div>
+    </div>
+    <div class="sb-scroll" id="sb-nav"></div>
+    <div class="sb-foot hide-c">
+      <button class="sb-logout" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="tb-left">
+        <button class="tb-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <div>
+          <div class="tb-title" id="tb-title">Dashboard Monitor</div>
+          <div class="tb-sub" id="tb-sub">ภาพรวมระบบ · PSD_eNGINNo</div>
+        </div>
+      </div>
+      <div class="tb-right">
+        <div class="clk"><div id="clk-time">--:--:--</div><div class="clk-d" id="clk-date">-</div></div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- PAGE: DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="sec-hdr">
+          <div><h2><i class="fa-solid fa-gauge-high"></i> Dashboard Monitor</h2><p>คลิกไอคอนเพื่อเปิดใช้งาน WebApp / Looker Studio / AppSheet — แสดงผลภายในหน้านี้ทั้งหมด</p></div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-box"><div class="v" style="color:var(--cyan)" id="st-total">0</div><div class="l">ลิงก์ทั้งหมด</div></div>
+          <div class="stat-box"><div class="v" style="color:var(--green)" id="st-webapp">0</div><div class="l">WebApp</div></div>
+          <div class="stat-box"><div class="v" style="color:var(--yellow)" id="st-looker">0</div><div class="l">Looker Studio</div></div>
+          <div class="stat-box"><div class="v" style="color:var(--purple)" id="st-appsheet">0</div><div class="l">AppSheet</div></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><h3><i class="fa-solid fa-diagram-project"></i> WebApp &amp; Dashboard ที่เข้าถึงได้</h3>
+            <button class="btn btn-c" id="btn-add-link-dash" style="display:none;" onclick="openLinkModal(null)"><i class="fa-solid fa-plus"></i> เพิ่มลิงก์</button>
+          </div>
+          <div class="link-grid" id="dash-link-grid"></div>
+        </div>
+      </div>
+
+      <!-- PAGE: VIEWER -->
+      <div class="page" id="page-viewer">
+        <div class="viewer-bar">
+          <button class="btn btn-ghost" onclick="nav('dashboard')"><i class="fa-solid fa-arrow-left"></i> กลับ</button>
+          <div style="font-weight:700;font-size:0.85rem;" id="viewer-title">—</div>
+        </div>
+        <div class="viewer-frame-wrap"><iframe id="viewer-iframe" src=""></iframe></div>
+        <div style="font-size:0.65rem;color:var(--text3);margin-top:8px;">
+          <i class="fa-solid fa-circle-info"></i> หากหน้าจอว่างเปล่า อาจเป็นเพราะเว็บไซต์ปลายทางตั้งค่าไม่อนุญาตให้แสดงผลแบบฝัง (iframe) — กรณีนี้ให้ตรวจสอบ/แก้ไขลิงก์ให้เป็น "ลิงก์แบบฝัง (Embed URL)" ที่ Admin Panel
+        </div>
+      </div>
+
+      <!-- PAGE: ADMIN -->
+      <div class="page" id="page-admin">
+        <div class="sec-hdr"><div><h2><i class="fa-solid fa-user-shield"></i> Admin Panel</h2><p>จัดการผู้ใช้งาน · สิทธิ์การเข้าถึงโมดูล · ลิงก์ WebApp/Dashboard</p></div></div>
+        <div class="tabs2">
+          <button class="tab2-btn on" id="atab-users" onclick="switchAdminTab('users')"><i class="fa-solid fa-users"></i> ผู้ใช้งาน <span id="pending-count-tab"></span></button>
+          <button class="tab2-btn" id="atab-links" onclick="switchAdminTab('links')"><i class="fa-solid fa-link"></i> จัดการลิงก์</button>
+        </div>
+
+        <div id="admin-pane-users">
+          <div class="card">
+            <div class="card-hdr"><h3><i class="fa-solid fa-user-clock"></i> คำขอสมัครใหม่ (รออนุมัติ)</h3></div>
+            <table><thead><tr><th>ชื่อ</th><th>Username</th><th>หน่วยงาน</th><th>วันที่สมัคร</th><th style="text-align:right;">จัดการ</th></tr></thead>
+            <tbody id="tbl-pending"></tbody></table>
+          </div>
+          <div class="card">
+            <div class="card-hdr"><h3><i class="fa-solid fa-users"></i> ผู้ใช้งานทั้งหมด</h3></div>
+            <table><thead><tr><th>ชื่อ</th><th>Username</th><th>หน่วยงาน</th><th>สถานะ</th><th>สิทธิ์การเข้าถึง</th><th style="text-align:right;">จัดการ</th></tr></thead>
+            <tbody id="tbl-users"></tbody></table>
+          </div>
+        </div>
+
+        <div id="admin-pane-links" style="display:none;">
+          <div class="card">
+            <div class="card-hdr"><h3><i class="fa-solid fa-link"></i> รายการลิงก์ WebApp / Looker Studio / AppSheet</h3>
+              <button class="btn btn-c" onclick="openLinkModal(null)"><i class="fa-solid fa-plus"></i> เพิ่มลิงก์ใหม่</button>
+            </div>
+            <table><thead><tr><th>ไอคอน</th><th>ชื่อ</th><th>ประเภท</th><th>URL</th><th>สถานะ</th><th style="text-align:right;">จัดการ</th></tr></thead>
+            <tbody id="tbl-links"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- MODAL: Link -->
+<div class="modal-ov" id="modal-link">
+  <div class="modal-box">
+    <div class="modal-hdr"><h3 id="link-modal-title">เพิ่มลิงก์ใหม่</h3><button class="modal-x" onclick="closeModal('modal-link')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <input type="hidden" id="lk-id">
+      <div class="fgroup"><label class="flabel">ชื่อที่แสดง *</label><input class="fi" id="lk-name" placeholder="เช่น Dashboard ยอดขาย Q3"></div>
+      <div class="fgroup"><label class="flabel">ประเภท *</label>
+        <select class="fi" id="lk-type">
+          <option value="webapp">🖥️ WebApp</option>
+          <option value="looker">📈 Looker Studio</option>
+          <option value="appsheet">📱 AppSheet</option>
+          <option value="other">🌐 อื่นๆ</option>
+        </select>
+      </div>
+      <div class="fgroup"><label class="flabel">URL *</label><input class="fi" id="lk-url" placeholder="https://..."></div>
+      <div class="chk-row"><input type="checkbox" id="lk-active" checked><label for="lk-active">เปิดใช้งาน (แสดงในเมนู)</label></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-r" id="lk-delete-btn" style="display:none;" onclick="deleteLinkFromModal()"><i class="fa-solid fa-trash"></i> ลบ</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-link')">ยกเลิก</button>
+      <button class="btn btn-c" onclick="saveLink()"><i class="fa-solid fa-check"></i> บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Edit User / Module Access -->
+<div class="modal-ov" id="modal-user">
+  <div class="modal-box">
+    <div class="modal-hdr"><h3>แก้ไขผู้ใช้งาน &amp; สิทธิ์เข้าถึงโมดูล</h3><button class="modal-x" onclick="closeModal('modal-user')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <input type="hidden" id="eu-id">
+      <div class="fgroup"><label class="flabel">ชื่อ-นามสกุล</label><input class="fi" id="eu-name"></div>
+      <div class="fgroup"><label class="flabel">หน่วยงาน / ตำแหน่ง</label><input class="fi" id="eu-dept"></div>
+      <div class="fgroup"><label class="flabel">ตั้งรหัสผ่านใหม่ (เว้นว่างถ้าไม่เปลี่ยน)</label><input class="fi" type="password" id="eu-pass" placeholder="••••••••"></div>
+      <div class="fgroup">
+        <label class="flabel"><i class="fa-solid fa-gear"></i> Setting: โมดูล/ลิงก์ที่อนุญาตให้ผู้ใช้นี้เห็น</label>
+        <div id="eu-modules"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-user')">ยกเลิก</button>
+      <button class="btn btn-c" onclick="saveUserEdit()"><i class="fa-solid fa-check"></i> บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// STORAGE HELPERS
+// ═══════════════════════════════════════════════════
+const K_USERS   = 'psd_osm_users_v1';
+const K_SESSION = 'psd_osm_session_v1';
+const K_LINKS   = 'psd_osm_links_v1';
+
+function loadJSON(k, fb){ try{ var v=JSON.parse(localStorage.getItem(k)); return v===null||v===undefined?fb:v; }catch(e){ return fb; } }
+function saveJSON(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+function escHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function uid(p){ return p+'-'+Date.now()+'-'+Math.floor(Math.random()*1000); }
+
+// System (fixed) accounts — not stored in editable user list
+const SYS_ADMIN = { id:'sys-admin', username:'admin',   password:'passsword277', name:'ผู้ดูแลระบบ (Admin)', dept:'System Administrator', isAdmin:true,  isDuty:false, status:'approved' };
+const SYS_DUTY  = { id:'sys-duty',  username:'duty_ts', password:'dutyts2026',   name:'Duty Team',            dept:'Duty Team',            isAdmin:false, isDuty:true,  status:'approved' };
+
+function getUsers(){ return loadJSON(K_USERS, []); }
+function saveUsers(u){ saveJSON(K_USERS, u); }
+function getLinks(){ return loadJSON(K_LINKS, []); }
+function saveLinks(l){ saveJSON(K_LINKS, l); }
+function getSession(){ return loadJSON(K_SESSION, null); }
+function saveSession(u){ saveJSON(K_SESSION, { user:u, ts:Date.now() }); }
+function clearSession(){ localStorage.removeItem(K_SESSION); }
+
+var _me = null; // currently logged-in user object
+
+// ═══════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════
+function showToast(msg, type){
+  var wrap = document.getElementById('toast-wrap');
+  var t = document.createElement('div');
+  t.className = 'toast ' + (type||'success');
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 3200);
+}
+
+// ═══════════════════════════════════════════════════
+// AUTH: LOGIN / REGISTER / LOGOUT
+// ═══════════════════════════════════════════════════
+function switchAuthTab(tab){
+  var isLogin = tab === 'login';
+  document.getElementById('pane-login').style.display = isLogin ? 'block' : 'none';
+  document.getElementById('pane-reg').style.display    = isLogin ? 'none' : 'block';
+  document.getElementById('tabbtn-login').classList.toggle('on', isLogin);
+  document.getElementById('tabbtn-reg').classList.toggle('on', !isLogin);
+}
+
+function doLogin(){
+  var u = (document.getElementById('li-user').value||'').trim();
+  var p = document.getElementById('li-pass').value||'';
+  var errEl = document.getElementById('login-err');
+  errEl.style.display='none';
+
+  if (u === SYS_ADMIN.username && p === SYS_ADMIN.password) { loginSuccess(SYS_ADMIN); return; }
+  if (u === SYS_DUTY.username  && p === SYS_DUTY.password)  { loginSuccess(SYS_DUTY);  return; }
+
+  var found = getUsers().find(function(x){ return x.username===u && x.password===p; });
+  if (!found){ errEl.textContent='❌ Username หรือ Password ไม่ถูกต้อง'; errEl.style.display='block'; return; }
+  if (found.status === 'pending'){ errEl.textContent='⏳ บัญชีนี้รอการอนุมัติจาก Admin'; errEl.style.display='block'; return; }
+  if (found.status === 'rejected'){ errEl.textContent='❌ คำขอนี้ถูกปฏิเสธ กรุณาติดต่อ Admin'; errEl.style.display='block'; return; }
+  loginSuccess(found);
+}
+
+function doRegister(){
+  var name = document.getElementById('rg-name').value.trim();
+  var user = document.getElementById('rg-user').value.trim();
+  var pass = document.getElementById('rg-pass').value;
+  var dept = document.getElementById('rg-dept').value.trim();
+  var errEl = document.getElementById('reg-err'), okEl = document.getElementById('reg-ok');
+  errEl.style.display='none'; okEl.style.display='none';
+
+  if (!name || !user || !pass){ errEl.textContent='❌ กรุณากรอกชื่อ, Username, Password ให้ครบ'; errEl.style.display='block'; return; }
+  if (user===SYS_ADMIN.username || user===SYS_DUTY.username || getUsers().find(function(x){return x.username===user;})){
+    errEl.textContent='❌ Username นี้ถูกใช้งานแล้ว'; errEl.style.display='block'; return;
+  }
+  var list = getUsers();
+  list.push({ id:uid('USR'), name:name, username:user, password:pass, dept:dept, status:'pending',
+              isAdmin:false, isDuty:false, modules:['dashboard'], createdAt:new Date().toLocaleString('th-TH') });
+  saveUsers(list);
+  okEl.textContent='✅ ส่งคำขอสำเร็จ! กรุณารอ Admin อนุมัติก่อนเข้าใช้งาน'; okEl.style.display='block';
+  ['rg-name','rg-user','rg-pass','rg-dept'].forEach(function(id){ document.getElementById(id).value=''; });
+}
+
+function loginSuccess(user){
+  _me = user;
+  saveSession(user);
+  document.getElementById('auth-page').style.display='none';
+  document.getElementById('shell').style.display='flex';
+  document.getElementById('sb-uname').textContent = user.name||user.username;
+  document.getElementById('sb-urole').textContent = user.isAdmin ? 'Admin · Administrator' : (user.isDuty ? 'Duty Team' : (user.dept||'User'));
+  renderSidebar();
+  document.getElementById('btn-add-link-dash').style.display = user.isAdmin ? 'inline-flex' : 'none';
+  nav('dashboard');
+  showToast('ยินดีต้อนรับ ' + (user.name||user.username) + ' 👋','success');
+}
+
+function doLogout(){
+  if (!confirm('ต้องการออกจากระบบ?')) return;
+  _me = null; clearSession();
+  document.getElementById('shell').style.display='none';
+  document.getElementById('auth-page').style.display='flex';
+  document.getElementById('li-user').value=''; document.getElementById('li-pass').value='';
+}
+
+// ═══════════════════════════════════════════════════
+// MODULES (dashboard is fixed; each active link = 1 module)
+// ═══════════════════════════════════════════════════
+function typeMeta(type){
+  return {
+    webapp:  { label:'WebApp',        icon:'fa-solid fa-display',      color:'#10b981' },
+    looker:  { label:'Looker Studio', icon:'fa-solid fa-chart-line',   color:'#f59e0b' },
+    appsheet:{ label:'AppSheet',      icon:'fa-solid fa-table-cells',  color:'#a855f7' },
+    other:   { label:'อื่นๆ',          icon:'fa-solid fa-link',         color:'#3b82f6' }
+  }[type] || { label:'ลิงก์', icon:'fa-solid fa-link', color:'#3b82f6' };
+}
+
+function userCanSee(user, moduleId){
+  if (moduleId === 'dashboard') return true;
+  if (user.isAdmin || user.isDuty) return true;
+  return (user.modules||[]).indexOf(moduleId) !== -1;
+}
+
+// ═══════════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════════
+function renderSidebar(){
+  if (!_me) return;
+  var links = getLinks();
+  var html = '<div class="sb-sec hide-c">Dashboard</div>' +
+    sbItem('dashboard','fa-solid fa-gauge-high','Dashboard Monitor', page_isActive('dashboard'));
+
+  var activeLinks = links.filter(function(l){ return l.active && userCanSee(_me, l.id); });
+  if (activeLinks.length){
+    html += '<div class="sb-sec hide-c">WebApp &amp; Dashboard</div>';
+    activeLinks.forEach(function(l){
+      var tm = typeMeta(l.type);
+      html += sbItem(l.id, tm.icon, l.name, false, 'openLinkViewer(\''+l.id+'\')');
+    });
+  }
+  if (_me.isAdmin){
+    var pendingCount = getUsers().filter(function(u){return u.status==='pending';}).length;
+    html += '<div class="sb-sec hide-c">System</div>' +
+      sbItem('admin','fa-solid fa-user-shield','Admin Panel', page_isActive('admin'), null, pendingCount);
+  }
+  document.getElementById('sb-nav').innerHTML = html;
+}
+
+var _activePage = 'dashboard';
+function page_isActive(id){ return _activePage===id; }
+function sbItem(id, icon, label, active, onclick, badge){
+  return '<div class="sb-item'+(active?' active':'')+'" onclick="'+(onclick||("nav('"+id+"')"))+'">' +
+    '<span class="si"><i class="'+icon+'"></i></span>' +
+    '<span class="sl hide-c">'+escHtml(label)+'</span>' +
+    (badge?'<span class="sbadge hide-c">'+badge+'</span>':'') + '</div>';
+}
+
+function toggleSidebar(){
+  var sb = document.getElementById('sidebar');
+  if (window.innerWidth <= 860) sb.classList.toggle('mobopen');
+  else sb.classList.toggle('collapsed');
+}
+
+// ═══════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════
+function nav(id){
+  _activePage = id;
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  var titles = { dashboard:['Dashboard Monitor','ภาพรวมระบบ · PSD_eNGINNo'], admin:['Admin Panel','จัดการผู้ใช้งานและสิทธิ์การเข้าถึง'], viewer:['กำลังเปิด...',''] };
+  if (id==='dashboard'){ document.getElementById('page-dashboard').classList.add('active'); renderDashboard(); }
+  else if (id==='admin'){
+    if (!_me.isAdmin){ showToast('ไม่มีสิทธิ์เข้าถึงหน้านี้','error'); id='dashboard'; document.getElementById('page-dashboard').classList.add('active'); renderDashboard(); }
+    else { document.getElementById('page-admin').classList.add('active'); renderAdmin(); }
+  }
+  var t = titles[id] || titles.dashboard;
+  document.getElementById('tb-title').textContent = t[0];
+  document.getElementById('tb-sub').textContent = t[1];
+  renderSidebar();
+  if (window.innerWidth <= 860) document.getElementById('sidebar').classList.remove('mobopen');
+}
+
+function openLinkViewer(linkId){
+  var link = getLinks().find(function(l){ return l.id===linkId; });
+  if (!link){ showToast('ไม่พบลิงก์นี้','error'); return; }
+  _activePage = linkId;
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('page-viewer').classList.add('active');
+  document.getElementById('viewer-title').textContent = link.name;
+  document.getElementById('viewer-iframe').src = link.url;
+  document.getElementById('tb-title').textContent = link.name;
+  document.getElementById('tb-sub').textContent = typeMeta(link.type).label + ' · เปิดภายใน PSD_eNGINNo';
+  renderSidebar();
+  if (window.innerWidth <= 860) document.getElementById('sidebar').classList.remove('mobopen');
+}
+
+// ═══════════════════════════════════════════════════
+// DASHBOARD PAGE
+// ═══════════════════════════════════════════════════
+function renderDashboard(){
+  var links = getLinks().filter(function(l){ return l.active && userCanSee(_me, l.id); });
+  var all = getLinks();
+  document.getElementById('st-total').textContent    = all.filter(function(l){return l.active;}).length;
+  document.getElementById('st-webapp').textContent   = all.filter(function(l){return l.active&&l.type==='webapp';}).length;
+  document.getElementById('st-looker').textContent   = all.filter(function(l){return l.active&&l.type==='looker';}).length;
+  document.getElementById('st-appsheet').textContent = all.filter(function(l){return l.active&&l.type==='appsheet';}).length;
+
+  var grid = document.getElementById('dash-link-grid');
+  if (!links.length){
+    grid.innerHTML = '<div class="empty-hint" style="grid-column:1/-1;"><i class="fa-solid fa-inbox" style="font-size:1.8rem;margin-bottom:10px;display:block;"></i>' +
+      (_me.isAdmin ? 'ยังไม่มีลิงก์ — กดปุ่ม "เพิ่มลิงก์" เพื่อเริ่มเพิ่ม WebApp / Looker Studio / AppSheet' : 'ยังไม่มีลิงก์ที่ได้รับสิทธิ์การเข้าถึง กรุณาติดต่อ Admin') + '</div>';
+    return;
+  }
+  grid.innerHTML = links.map(function(l){
+    var tm = typeMeta(l.type);
+    return '<div class="link-tile" onclick="openLinkViewer(\''+l.id+'\')">' +
+      (_me.isAdmin ? '<div class="li-edit" onclick="event.stopPropagation();openLinkModal(\''+l.id+'\')"><i class="fa-solid fa-pen"></i></div>' : '') +
+      '<div class="li-icon" style="background:'+tm.color+'22;color:'+tm.color+';border:1px solid '+tm.color+'44;"><i class="'+tm.icon+'"></i></div>' +
+      '<div class="li-name">'+escHtml(l.name)+'</div>' +
+      '<div class="li-type">'+tm.label+'</div></div>';
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// LINK CRUD (Admin)
+// ═══════════════════════════════════════════════════
+function openLinkModal(linkId){
+  document.getElementById('lk-id').value = linkId||'';
+  document.getElementById('lk-delete-btn').style.display = linkId ? 'inline-flex' : 'none';
+  if (linkId){
+    var l = getLinks().find(function(x){return x.id===linkId;});
+    document.getElementById('link-modal-title').textContent = 'แก้ไขลิงก์';
+    document.getElementById('lk-name').value = l.name;
+    document.getElementById('lk-type').value = l.type;
+    document.getElementById('lk-url').value = l.url;
+    document.getElementById('lk-active').checked = !!l.active;
+  } else {
+    document.getElementById('link-modal-title').textContent = 'เพิ่มลิงก์ใหม่';
+    document.getElementById('lk-name').value='';
+    document.getElementById('lk-type').value='webapp';
+    document.getElementById('lk-url').value='';
+    document.getElementById('lk-active').checked = true;
+  }
+  openModal('modal-link');
+}
+function saveLink(){
+  var id = document.getElementById('lk-id').value;
+  var name = document.getElementById('lk-name').value.trim();
+  var url = document.getElementById('lk-url').value.trim();
+  var type = document.getElementById('lk-type').value;
+  var active = document.getElementById('lk-active').checked;
+  if (!name || !url){ showToast('กรุณากรอกชื่อและ URL ให้ครบ','warn'); return; }
+  if (!/^https?:\/\//i.test(url)){ showToast('URL ต้องขึ้นต้นด้วย http:// หรือ https://','warn'); return; }
+  var list = getLinks();
+  if (id){
+    var idx = list.findIndex(function(x){return x.id===id;});
+    if (idx>=0){ list[idx].name=name; list[idx].url=url; list[idx].type=type; list[idx].active=active; }
+  } else {
+    list.push({ id:uid('LK'), name:name, url:url, type:type, active:active, createdAt:new Date().toLocaleString('th-TH') });
+  }
+  saveLinks(list);
+  closeModal('modal-link');
+  showToast('✅ บันทึกลิงก์แล้ว','success');
+  renderDashboard(); renderSidebar();
+  if (document.getElementById('page-admin').classList.contains('active')) renderAdmin();
+}
+function deleteLinkFromModal(){
+  var id = document.getElementById('lk-id').value;
+  if (!id) return;
+  if (!confirm('ต้องการลบลิงก์นี้หรือไม่?')) return;
+  saveLinks(getLinks().filter(function(x){return x.id!==id;}));
+  closeModal('modal-link');
+  showToast('🗑️ ลบลิงก์แล้ว','warn');
+  renderDashboard(); renderSidebar();
+  if (document.getElementById('page-admin').classList.contains('active')) renderAdmin();
+}
+function toggleLinkActive(id){
+  var list = getLinks();
+  var l = list.find(function(x){return x.id===id;});
+  if (l){ l.active = !l.active; saveLinks(list); renderAdmin(); renderDashboard(); renderSidebar(); }
+}
+
+// ═══════════════════════════════════════════════════
+// ADMIN PANEL
+// ═══════════════════════════════════════════════════
+function switchAdminTab(tab){
+  document.getElementById('atab-users').classList.toggle('on', tab==='users');
+  document.getElementById('atab-links').classList.toggle('on', tab==='links');
+  document.getElementById('admin-pane-users').style.display = tab==='users' ? 'block' : 'none';
+  document.getElementById('admin-pane-links').style.display = tab==='links' ? 'block' : 'none';
+}
+
+function renderAdmin(){
+  var users = getUsers();
+  var links = getLinks();
+  var pending = users.filter(function(u){return u.status==='pending';});
+  var pcTab = document.getElementById('pending-count-tab');
+  pcTab.innerHTML = pending.length ? '<span class="sbadge" style="position:static;">'+pending.length+'</span>' : '';
+
+  // Pending table
+  var tp = document.getElementById('tbl-pending');
+  tp.innerHTML = pending.length ? pending.map(function(u){
+    return '<tr><td>'+escHtml(u.name)+'</td><td>'+escHtml(u.username)+'</td><td>'+escHtml(u.dept||'—')+'</td><td>'+escHtml(u.createdAt||'—')+'</td>' +
+      '<td style="text-align:right;white-space:nowrap;">' +
+      '<button class="btn btn-g" style="padding:4px 10px;" onclick="approveUser(\''+u.id+'\')"><i class="fa-solid fa-check"></i> อนุมัติ</button> ' +
+      '<button class="btn btn-r" style="padding:4px 10px;" onclick="rejectUser(\''+u.id+'\')"><i class="fa-solid fa-xmark"></i> ปฏิเสธ</button>' +
+      '</td></tr>';
+  }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:16px;">ไม่มีคำขอรออนุมัติ</td></tr>';
+
+  // All users table (system + custom)
+  var tu = document.getElementById('tbl-users');
+  var rows = [];
+  [SYS_ADMIN, SYS_DUTY].forEach(function(u){
+    rows.push('<tr><td>'+escHtml(u.name)+'</td><td>'+escHtml(u.username)+'</td><td>'+escHtml(u.dept)+'</td>' +
+      '<td><span class="badge b-p">ระบบ · เข้าถึงทั้งหมด</span></td><td><span style="color:var(--text3);">ทุกโมดูล</span></td>' +
+      '<td style="text-align:right;color:var(--text3);font-size:0.68rem;">บัญชีระบบ (แก้ไขไม่ได้)</td></tr>');
+  });
+  users.filter(function(u){return u.status!=='pending';}).forEach(function(u){
+    var statusBadge = u.status==='approved' ? '<span class="badge b-g">อนุมัติแล้ว</span>' : '<span class="badge b-r">ปฏิเสธ</span>';
+    var modCount = (u.modules||[]).filter(function(m){return m!=='dashboard';}).length;
+    rows.push('<tr><td>'+escHtml(u.name)+'</td><td>'+escHtml(u.username)+'</td><td>'+escHtml(u.dept||'—')+'</td>' +
+      '<td>'+statusBadge+'</td><td>'+modCount+' ลิงก์</td>' +
+      '<td style="text-align:right;white-space:nowrap;">' +
+      '<button class="btn btn-c" style="padding:4px 10px;" onclick="openUserEdit(\''+u.id+'\')"><i class="fa-solid fa-gear"></i> Setting</button> ' +
+      '<button class="btn btn-r" style="padding:4px 10px;" onclick="deleteUser(\''+u.id+'\')"><i class="fa-solid fa-trash"></i></button>' +
+      '</td></tr>');
+  });
+  tu.innerHTML = rows.join('');
+
+  // Links table
+  var tl = document.getElementById('tbl-links');
+  tl.innerHTML = links.length ? links.map(function(l){
+    var tm = typeMeta(l.type);
+    return '<tr><td><i class="'+tm.icon+'" style="color:'+tm.color+';"></i></td><td>'+escHtml(l.name)+'</td><td>'+tm.label+'</td>' +
+      '<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text3);">'+escHtml(l.url)+'</td>' +
+      '<td>'+(l.active?'<span class="badge b-g">เปิดใช้งาน</span>':'<span class="badge b-r">ปิดใช้งาน</span>')+'</td>' +
+      '<td style="text-align:right;white-space:nowrap;">' +
+      '<button class="btn btn-y" style="padding:4px 10px;" onclick="toggleLinkActive(\''+l.id+'\')"><i class="fa-solid fa-power-off"></i></button> ' +
+      '<button class="btn btn-c" style="padding:4px 10px;" onclick="openLinkModal(\''+l.id+'\')"><i class="fa-solid fa-pen"></i></button>' +
+      '</td></tr>';
+  }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:16px;">ยังไม่มีลิงก์ — กด "เพิ่มลิงก์ใหม่"</td></tr>';
+}
+
+function approveUser(id){
+  var list = getUsers();
+  var u = list.find(function(x){return x.id===id;});
+  if (u){ u.status='approved'; saveUsers(list); showToast('✅ อนุมัติ '+u.name+' แล้ว','success'); renderAdmin(); }
+}
+function rejectUser(id){
+  if (!confirm('ต้องการปฏิเสธคำขอนี้หรือไม่?')) return;
+  var list = getUsers();
+  var u = list.find(function(x){return x.id===id;});
+  if (u){ u.status='rejected'; saveUsers(list); showToast('ปฏิเสธคำขอแล้ว','warn'); renderAdmin(); }
+}
+function deleteUser(id){
+  if (!confirm('ต้องการลบผู้ใช้งานนี้อย่างถาวรหรือไม่?')) return;
+  saveUsers(getUsers().filter(function(x){return x.id!==id;}));
+  showToast('🗑️ ลบผู้ใช้งานแล้ว','warn');
+  renderAdmin();
+}
+
+function openUserEdit(id){
+  var u = getUsers().find(function(x){return x.id===id;});
+  if (!u) return;
+  document.getElementById('eu-id').value = u.id;
+  document.getElementById('eu-name').value = u.name;
+  document.getElementById('eu-dept').value = u.dept||'';
+  document.getElementById('eu-pass').value = '';
+  var links = getLinks();
+  var userMods = u.modules||[];
+  var html = '<div class="chk-row"><input type="checkbox" checked disabled><label>📊 Dashboard Monitor (เห็นได้เสมอ)</label></div>';
+  if (!links.length){
+    html += '<div style="font-size:0.7rem;color:var(--text3);padding:6px 2px;">ยังไม่มีลิงก์ในระบบ — เพิ่มที่แท็บ "จัดการลิงก์" ก่อน</div>';
+  } else {
+    links.forEach(function(l){
+      var tm = typeMeta(l.type);
+      var checked = userMods.indexOf(l.id)!==-1 ? 'checked' : '';
+      html += '<div class="chk-row"><input type="checkbox" id="eumod-'+l.id+'" '+checked+'>' +
+        '<label for="eumod-'+l.id+'"><i class="'+tm.icon+'" style="color:'+tm.color+';margin-right:5px;"></i>'+escHtml(l.name)+' <span style="color:var(--text3);">('+tm.label+')</span></label></div>';
+    });
+  }
+  document.getElementById('eu-modules').innerHTML = html;
+  openModal('modal-user');
+}
+function saveUserEdit(){
+  var id = document.getElementById('eu-id').value;
+  var list = getUsers();
+  var u = list.find(function(x){return x.id===id;});
+  if (!u) return;
+  u.name = document.getElementById('eu-name').value.trim() || u.name;
+  u.dept = document.getElementById('eu-dept').value.trim();
+  var np = document.getElementById('eu-pass').value;
+  if (np) u.password = np;
+  var mods = ['dashboard'];
+  getLinks().forEach(function(l){
+    var el = document.getElementById('eumod-'+l.id);
+    if (el && el.checked) mods.push(l.id);
+  });
+  u.modules = mods;
+  saveUsers(list);
+  closeModal('modal-user');
+  showToast('✅ บันทึกการตั้งค่าผู้ใช้งานแล้ว','success');
+  renderAdmin();
+}
+
+// ═══════════════════════════════════════════════════
+// MODAL GENERIC
+// ═══════════════════════════════════════════════════
+function openModal(id){ document.getElementById(id).classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-ov').forEach(function(m){
+  m.addEventListener('click', function(e){ if (e.target===m) m.classList.remove('show'); });
+});
+
+// ═══════════════════════════════════════════════════
+// CLOCK
+// ═══════════════════════════════════════════════════
+function tickClock(){
+  var d = new Date();
+  document.getElementById('clk-time').textContent = d.toLocaleTimeString('th-TH');
+  document.getElementById('clk-date').textContent = d.toLocaleDateString('th-TH',{day:'2-digit',month:'short',year:'numeric'});
+}
+setInterval(tickClock, 1000); tickClock();
+
+// ═══════════════════════════════════════════════════
+// INIT / SESSION RESTORE
+// ═══════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', function(){
+  var sess = getSession();
+  if (sess && sess.user && (Date.now()-sess.ts) < 8*3600*1000){
+    // re-validate against system/custom accounts in case password changed
+    var u = sess.user;
+    if (u.username===SYS_ADMIN.username) u = SYS_ADMIN;
+    else if (u.username===SYS_DUTY.username) u = SYS_DUTY;
+    else { var fresh = getUsers().find(function(x){return x.id===u.id;}); if (fresh) u = fresh; }
+    if (u.status==='approved' || u.isAdmin || u.isDuty) loginSuccess(u);
+  }
+});
+</script>
+</body>
+</html>
