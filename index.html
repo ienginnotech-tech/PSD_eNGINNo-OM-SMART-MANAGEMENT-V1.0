@@ -237,11 +237,13 @@ tr:hover td{background:rgba(255,255,255,0.02);}
         <div class="sec-hdr">
           <div><h2><i class="fa-solid fa-gauge-high"></i> Dashboard Monitor</h2><p>คลิกไอคอนเพื่อเปิดใช้งาน WebApp / Looker Studio / AppSheet — แสดงผลภายในหน้านี้ทั้งหมด</p></div>
         </div>
-        <div class="stat-grid">
+        <div class="stat-grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr));">
           <div class="stat-box"><div class="v" style="color:var(--cyan)" id="st-total">0</div><div class="l">ลิงก์ทั้งหมด</div></div>
           <div class="stat-box"><div class="v" style="color:var(--green)" id="st-webapp">0</div><div class="l">WebApp</div></div>
           <div class="stat-box"><div class="v" style="color:var(--yellow)" id="st-looker">0</div><div class="l">Looker Studio</div></div>
           <div class="stat-box"><div class="v" style="color:var(--purple)" id="st-appsheet">0</div><div class="l">AppSheet</div></div>
+          <div class="stat-box"><div class="v" style="color:#0f9d58" id="st-sheets">0</div><div class="l">Google Sheet</div></div>
+          <div class="stat-box"><div class="v" style="color:var(--blue)" id="st-other">0</div><div class="l">อื่นๆ</div></div>
         </div>
         <div class="card">
           <div class="card-hdr"><h3><i class="fa-solid fa-diagram-project"></i> WebApp &amp; Dashboard ที่เข้าถึงได้</h3>
@@ -314,6 +316,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
           <option value="webapp">🖥️ WebApp</option>
           <option value="looker">📈 Looker Studio</option>
           <option value="appsheet">📱 AppSheet</option>
+          <option value="sheets">📊 Google Sheet</option>
           <option value="other">🌐 อื่นๆ</option>
         </select>
       </div>
@@ -465,6 +468,7 @@ function typeMeta(type){
     webapp:  { label:'WebApp',        icon:'fa-solid fa-display',      color:'#10b981' },
     looker:  { label:'Looker Studio', icon:'fa-solid fa-chart-line',   color:'#f59e0b' },
     appsheet:{ label:'AppSheet',      icon:'fa-solid fa-table-cells',  color:'#a855f7' },
+    sheets:  { label:'Google Sheet',  icon:'fa-solid fa-file-excel',   color:'#0f9d58' },
     other:   { label:'อื่นๆ',          icon:'fa-solid fa-link',         color:'#3b82f6' }
   }[type] || { label:'ลิงก์', icon:'fa-solid fa-link', color:'#3b82f6' };
 }
@@ -563,6 +567,8 @@ function renderDashboard(){
   document.getElementById('st-webapp').textContent   = all.filter(function(l){return l.active&&l.type==='webapp';}).length;
   document.getElementById('st-looker').textContent   = all.filter(function(l){return l.active&&l.type==='looker';}).length;
   document.getElementById('st-appsheet').textContent = all.filter(function(l){return l.active&&l.type==='appsheet';}).length;
+  document.getElementById('st-sheets').textContent   = all.filter(function(l){return l.active&&l.type==='sheets';}).length;
+  document.getElementById('st-other').textContent    = all.filter(function(l){return l.active&&l.type==='other';}).length;
 
   var grid = document.getElementById('dash-link-grid');
   if (!links.length){
